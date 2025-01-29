@@ -29,7 +29,7 @@ RUN buildDeps="build-essential" \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry - respects $POETRY_VERSION & $POETRY_HOME
-ENV POETRY_VERSION=1.2.1
+ENV POETRY_VERSION=2.0.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python3 - --version ${POETRY_VERSION} && \
     chmod a+x /opt/poetry/bin/poetry
@@ -49,11 +49,22 @@ ENV FASTAPI_ENV=development
 COPY --from=builder-base $POETRY_HOME $POETRY_HOME
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 
+# # install some additional dev dependencies
+# RUN buildDeps="build-essential" \
+#     && apt-get update \
+#     && apt-get install --no-install-recommends -y \
+#         curl \
+#         vim \
+#         netcat \
+#     && apt-get install -y --no-install-recommends $buildDeps \
+#     && rm -rf /var/lib/apt/lists/*
+
 # Copying in our entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # venv already has runtime deps installed we get a quicker install
+# must set workdir to pysetup path before install so that later production can pick up venv correctly
 WORKDIR $PYSETUP_PATH
 RUN poetry install
 

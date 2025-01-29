@@ -40,7 +40,7 @@ This is an updated and modified fork of [python-poetry-docker-example](https://g
 Create the virtual environment and install dependencies with:
 
 ```shell
-poetry install
+poetry install --no-root # Don't install root package (your project)
 ```
 
 See the [poetry docs](https://python-poetry.org/docs/) for information on how to add/update dependencies.
